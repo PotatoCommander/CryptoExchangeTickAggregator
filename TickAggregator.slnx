@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="docker-compose.yml" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/TickAggregator.Tests/TickAggregator.Tests.csproj" />
+  </Folder>
+  <Folder Name="/TickAggreagator.Connectors/">
+    <Project Path="src/Connectors/Binance/TickAggregator.Connectors.Binance.csproj" />
+    <Project Path="src/Connectors/Bybit/TickAggregator.Connectors.Bybit.csproj" />
+  </Folder>
+  <Project Path="src/TickAggregator.Infrastructure/TickAggregator.Infrastructure.csproj" />
+  <Project Path="src/TickAggregator/TickAggregator.App.csproj" />
+  <Project Path="src/WebSocketClient/WebSocketClient.csproj" />
+</Solution>
