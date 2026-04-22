@@ -102,6 +102,21 @@ LIMIT 20;
 - after reconnect, subscription is sent again
 - duplicates are filtered first in memory and then again in Postgres via `ON CONFLICT DO NOTHING`
 
+## Logs
+
+The app periodically logs:
+
+```text
+rate=..., received=..., written=..., dupes=...
+```
+
+`received` and `written` do not have to match at every moment.
+
+- `received` = trades already accepted by the writer
+- `written` = trades already flushed to Postgres
+
+Because writes are batched, a small gap between them is expected. It usually means some trades are still sitting in the current in-memory batch and will be written on the next flush.
+
 ## Tests
 
 There are unit tests for:
