@@ -1,4 +1,5 @@
 CREATE TABLE IF NOT EXISTS exchange_trades (
+    id               BIGSERIAL       PRIMARY KEY,
     source           TEXT            NOT NULL,
     symbol           TEXT            NOT NULL,
     trade_id         TEXT            NOT NULL,
@@ -7,7 +8,7 @@ CREATE TABLE IF NOT EXISTS exchange_trades (
     side             TEXT            NOT NULL,
     ts_exchange      TIMESTAMPTZ     NOT NULL,
     received_at_utc  TIMESTAMPTZ     NOT NULL,
-    PRIMARY KEY (source, symbol, trade_id)
+    CONSTRAINT ux_exchange_trades_source_symbol_trade_id UNIQUE (source, symbol, trade_id)
 );
 
 CREATE INDEX IF NOT EXISTS ix_exchange_trades_symbol_ts ON exchange_trades (symbol, ts_exchange DESC);

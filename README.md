@@ -74,7 +74,11 @@ Main table:
 
 Primary key:
 
-- `PRIMARY KEY (source, symbol, trade_id)`
+- `id BIGSERIAL PRIMARY KEY`
+
+Unique key used for deduplication:
+
+- `UNIQUE (source, symbol, trade_id)`
 
 This is the second protection layer against duplicates after in-memory deduplication.
 
