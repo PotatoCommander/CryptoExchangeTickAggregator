@@ -112,9 +112,6 @@ namespace TickAggregator
             {
                 await Task.WhenAll(connectorTasks);
             }
-            catch (OperationCanceledException) when (cts.IsCancellationRequested)
-            {
-            }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Connector task faulted");
@@ -122,8 +119,7 @@ namespace TickAggregator
             finally
             {
                 writer.Complete();
-                try { await writerTask; } catch { }
-                try { await reporterTask; } catch { }
+                await Task.WhenAll(writerTask, reporterTask);
             }
 
             logger.LogInformation(

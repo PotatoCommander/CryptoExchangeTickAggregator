@@ -9,27 +9,18 @@ namespace TickAggregator.Service
     public class TickWriter
     {
         private readonly Channel<ExchangeTradeModel> _channel;
-        private readonly Func<IReadOnlyList<ExchangeTradeModel>, CancellationToken, Task> _flush;
+        private readonly ITradeSink _sink;
         private readonly TickWriterOptions _options;
         private readonly TickCounter _counter;
         private readonly ILogger<TickWriter> _logger;
 
         public TickWriter(
-            DbTradeService sink,
-            TickWriterOptions options,
-            TickCounter counter,
-            ILogger<TickWriter> logger)
-            : this(sink.WriteAsync, options, counter, logger)
-        {
-        }
-
-        public TickWriter(
-            Func<IReadOnlyList<ExchangeTradeModel>, CancellationToken, Task> flush,
+            ITradeSink sink,
             TickWriterOptions options,
             TickCounter counter,
             ILogger<TickWriter> logger)
         {
-            _flush = flush;
+            _sink = sink;
             _options = options;
             _counter = counter;
             _logger = logger;
@@ -105,6 +96,10 @@ namespace TickAggregator.Service
                     }
                 }
             }
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            {
+                _logger.LogInformation("TickWriter stopped.");
+            }
             finally
             {
                 try { await FlushAsync(batch, CancellationToken.None).ConfigureAwait(false); }
@@ -126,7 +121,7 @@ namespace TickAggregator.Service
 
             try
             {
-                await _flush(batch, ct).ConfigureAwait(false);
+                await _sink.WriteAsync(batch, ct).ConfigureAwait(false);
                 _counter.AddWritten(batch.Count);
             }
             catch (Exception ex)

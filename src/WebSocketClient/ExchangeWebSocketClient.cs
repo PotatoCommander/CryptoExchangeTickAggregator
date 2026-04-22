@@ -40,15 +40,15 @@ namespace WebSocketClient
 
                     //If anyone failed
                     var completedTask = await Task.WhenAny(receiveTask, pingTask, timeoutTask).ConfigureAwait(false);
-                    await completedTask.ConfigureAwait(false);
                     await sessionCts.CancelAsync();
-
+                    await completedTask.ConfigureAwait(false);
                     try
                     {
                         await Task.WhenAll(receiveTask, pingTask, timeoutTask).ConfigureAwait(false);
                     }
-                    catch
+                    catch (OperationCanceledException) when (sessionCts.IsCancellationRequested)
                     {
+                        _logger.LogInformation("Socket client stopped.");
                     }
 
                 }

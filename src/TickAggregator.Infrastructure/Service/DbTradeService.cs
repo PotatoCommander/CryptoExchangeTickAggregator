@@ -3,7 +3,7 @@ using TickAggregator.Infrastructure.Model;
 
 namespace TickAggregator.Infrastructure.Service
 {
-    public class DbTradeService : IAsyncDisposable
+    public class DbTradeService : ITradeSink, IAsyncDisposable
     {
         private readonly NpgsqlDataSource _dataSource;
 

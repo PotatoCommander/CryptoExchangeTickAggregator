@@ -19,7 +19,7 @@ namespace TickAggregator.Infrastructure.Connectors.Binance
             _logger = logger;
         }
 
-        public string Name { get; set; } = "binance";
+        public string Name => "binance";
 
         public Task SubscribeToTradesAsync(IReadOnlyCollection<string> symbols, Action<ExchangeTradeModel> onMessage, CancellationToken cancellationToken)
         {

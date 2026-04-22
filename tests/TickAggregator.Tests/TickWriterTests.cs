@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Microsoft.Extensions.Logging.Abstractions;
 using TickAggregator.Infrastructure.Model;
+using TickAggregator.Infrastructure.Service;
 using TickAggregator.Model;
 using TickAggregator.Service;
 using Xunit;
@@ -23,11 +24,12 @@ namespace TickAggregator.Tests
             };
 
         private sealed class Recorder
+            : ITradeSink
         {
             public List<ExchangeTradeModel> All { get; } = [];
             public int BatchCount { get; private set; }
 
-            public Task Flush(IReadOnlyList<ExchangeTradeModel> batch, CancellationToken _)
+            public Task WriteAsync(IReadOnlyList<ExchangeTradeModel> batch, CancellationToken _)
             {
                 lock (All)
                 {
@@ -45,7 +47,7 @@ namespace TickAggregator.Tests
             var rec = new Recorder();
             var counter = new TickCounter(NullLogger<TickCounter>.Instance);
             var writer = new TickWriter(
-                flush: rec.Flush,
+                sink: rec,
                 options: new TickWriterOptions { MaxBatchSize = 100, FlushInterval = TimeSpan.FromMilliseconds(50), DedupWindowSize = 1000 },
                 counter: counter,
                 logger: NullLogger<TickWriter>.Instance);
@@ -76,7 +78,7 @@ namespace TickAggregator.Tests
             var rec = new Recorder();
             var counter = new TickCounter(NullLogger<TickCounter>.Instance);
             var writer = new TickWriter(
-                flush: rec.Flush,
+                sink: rec,
                 options: new TickWriterOptions { MaxBatchSize = 100, FlushInterval = TimeSpan.FromMilliseconds(50), DedupWindowSize = 1000 },
                 counter: counter,
                 logger: NullLogger<TickWriter>.Instance);
@@ -103,7 +105,7 @@ namespace TickAggregator.Tests
             var rec = new Recorder();
             var counter = new TickCounter(NullLogger<TickCounter>.Instance);
             var writer = new TickWriter(
-                flush: rec.Flush,
+                sink: rec,
                 options: new TickWriterOptions { MaxBatchSize = 1000, FlushInterval = TimeSpan.FromMilliseconds(100), DedupWindowSize = 1000 },
                 counter: counter,
                 logger: NullLogger<TickWriter>.Instance);
@@ -129,7 +131,7 @@ namespace TickAggregator.Tests
             var rec = new Recorder();
             var counter = new TickCounter(NullLogger<TickCounter>.Instance);
             var writer = new TickWriter(
-                flush: rec.Flush,
+                sink: rec,
                 options: new TickWriterOptions { MaxBatchSize = 10, FlushInterval = TimeSpan.FromSeconds(60), DedupWindowSize = 1000 },
                 counter: counter,
                 logger: NullLogger<TickWriter>.Instance);
