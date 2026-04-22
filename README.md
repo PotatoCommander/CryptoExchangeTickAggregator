@@ -27,12 +27,6 @@ dotnet test
 
 Stop the app with `Ctrl+C`.
 
-Remove local Postgres together with its volume:
-
-```powershell
-.\cleanup.ps1
-```
-
 ## Config
 
 Main config file: [`src/TickAggregator/appsettings.json`](src/TickAggregator/appsettings.json)
